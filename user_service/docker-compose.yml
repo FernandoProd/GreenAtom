@@ -1,0 +1,12 @@
+services:
+  redis:
+    image: redis:7-alpine   # лёгкий образ с Redis 7
+    container_name: user-service-redis
+    ports:
+      - "6379:6379"         # проброс порта на localhost
+    volumes:
+      - redis_data:/data    # чтобы данные не терялись при перезапуске
+    restart: unless-stopped
+
+volumes:
+  redis_data:

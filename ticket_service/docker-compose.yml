@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  redis-ticket:
+    image: redis:7-alpine
+    container_name: ticket-service-redis
+    ports:
+      - "6380:6379"    # используем порт 6380 снаружи, чтобы не конфликтовать с user-service-redis на 6379
+    volumes:
+      - redis_ticket_data:/data
+    restart: unless-stopped
+
+  ticket-service:
+    build: .
+    container_name: ticket-service-app
+    ports:
+      - "8001:8000"
+    environment:
+      - REDIS_HOST=redis-ticket
+      - REDIS_PORT=6379
+      - USER_SERVICE_URL=http://localhost:8000  # при локальном тестировании без Docker-сети: http://host.docker.internal:8000
+    depends_on:
+      - redis-ticket
+
+volumes:
+  redis_ticket_data:
